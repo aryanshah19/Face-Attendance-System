@@ -51,8 +51,8 @@ def generate_hash_dict(list_of_students, dict_names, data):
 
 def send_photo(image):
 
-    apiToken = "5908592377:AAGg9-InNJyCryx5BrfuFpKc23vfRB4VR1s"
-    chatID = "1018753444"
+    apiToken = ""
+    chatID = ""
     apiURL = f'https://api.telegram.org/bot{apiToken}/sendPhoto'
 
     try:
@@ -63,8 +63,8 @@ def send_photo(image):
         print(e)
 
 def send_message(message):
-    apiToken = "5908592377:AAGg9-InNJyCryx5BrfuFpKc23vfRB4VR1s"
-    chatID = "1018753444"
+    apiToken = ""
+    chatID = ""
     apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
 
     try:
