@@ -3,11 +3,23 @@ import cv2
 from csv import writer
 from datetime import datetime, date
 import hashlib
-today = date.today()
 import pandas as pd
 import requests
 from pyzbar import pyzbar
 import time
+today = date.today()
+
+
+
+
+class my_dictionary(dict):
+
+    def __init__(self):
+        self = dict()
+
+    def add(self, key, value):
+        self[key] = value
+
 
 
 
@@ -49,11 +61,12 @@ def generate_hash_dict(list_of_students, dict_names, data):
         dict_names.add(i, [string, hash_generated])
     return dict_names
 
-def send_photo(image):
 
-    apiToken = ""
-    chatID = ""
+def send_photo(image, chatID):
+
+    apiToken = "5908592377:AAGg9-InNJyCryx5BrfuFpKc23vfRB4VR1s"
     apiURL = f'https://api.telegram.org/bot{apiToken}/sendPhoto'
+    chatID = str(chatID)
 
     try:
         response = requests.post( apiURL, data={'chat_id':chatID},
@@ -62,9 +75,10 @@ def send_photo(image):
     except Exception as e:
         print(e)
 
-def send_message(message):
-    apiToken = ""
-    chatID = ""
+
+def send_message(message, chatID):
+    apiToken = "5908592377:AAGg9-InNJyCryx5BrfuFpKc23vfRB4VR1s"
+    chatID = str(chatID)
     apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
 
     try:
@@ -72,7 +86,6 @@ def send_message(message):
         #print(response.text)
     except Exception as e:
         print(e)
-
 
 
 def read_barcodes(frame):

@@ -4,34 +4,24 @@ import os
 import time
 import numpy as np
 from datetime import date
-today = date.today()
 from helperfunctions import findEncodings, markAttendance, importstudentdata, \
-    generate_hash_dict, send_message, send_photo, read_bc, read_barcodes
+    generate_hash_dict, send_message, send_photo, read_bc, my_dictionary
 import qrcode
+
+today = date.today()
 
 Project_path = "/Users/aryan/Desktop/Attendance System/QR_Code_Images/"
 
-class my_dictionary(dict):
-
-    # __init__ function
-    def __init__(self):
-        self = dict()
-
-    # Function to add key:value
-    def add(self, key, value):
-        self[key] = value
-
-
 path = 'ImagesAttendance'
-images = []     # LIST CONTAINING ALL THE # IMAGES
-className = []    # LIST CONTAINING ALL THE CORRESPONDING CLASS Names
+images = []  # LIST CONTAINING ALL THE # IMAGES
+className = []  # LIST CONTAINING ALL THE CORRESPONDING CLASS Names
 myList = os.listdir(path)
 class_List = []
 count = 0
 
-for x,cl in enumerate(myList):
+for x, cl in enumerate(myList):
     if cl[-4:] == ".jpg":
-        count = count  + 1
+        count = count + 1
         curImg = cv2.imread(f'{path}/{cl}')
         images.append(curImg)
         className.append(os.path.splitext(cl)[0])
@@ -58,44 +48,40 @@ for encodeFace, faceLoc in zip(encodesCurFrame, facesCurFrame):
     matches = face_recognition.compare_faces(encodeListKnown, encodeFace)
     faceDis = face_recognition.face_distance(encodeListKnown, encodeFace)
 
-
 matchIndex = np.argmin(faceDis)
+
 rollno = ""
 if faceDis[matchIndex] < 0.50:
-    #name = className[matchIndex].upper()
     rollno = className[matchIndex].upper()
-    #markAttendance(name)
 else:
     rollno = False
-    #markAttendance(name)
 
 if rollno:
     data, list_of_students = importstudentdata("data.csv")
     dict_names = my_dictionary()
     dict_names = generate_hash_dict(list_of_students, dict_names, data)
-    #print(dict_names)
     rollno_hash = str(dict_names[rollno][1])
     img = qrcode.make(dict_names[rollno][1])
     qr_code_path = Project_path + str(rollno) + '.jpg'
     img.save(qr_code_path)
 
-    message = "Hello! " + rollno + " Here's Your QR code for " + str(date.today())
-    send_message(message)
-    send_photo(qr_code_path)
+    if rollno == "19BCP012" or rollno == "19BCP020":
+        message = "Hello! " + rollno + " Here's Your QR code for " + str(date.today())
+        send_message(message, data.loc[rollno]["chatid"])
+        send_photo(qr_code_path, data.loc[rollno]["chatid"])
+
+    else:
+        message = "Hello! " + rollno + " Here's Your QR code for " + str(date.today())
+        send_message(message, data.loc[rollno]["chatid"])
+        send_photo(qr_code_path, data.loc[rollno]["chatid"])
 
     qr_hash = read_bc()
 
     if rollno_hash == qr_hash:
         message_text = rollno + "-" + data.loc[rollno]["Name"] + " is present."
+        markAttendance(rollno, data)
         print(message_text)
     else:
         print("Couldn't verify the two methods, please try again")
 
-    markAttendance(rollno, data)
-
-
-
-
-
-
-
+    # markAttendance(rollno, data)
